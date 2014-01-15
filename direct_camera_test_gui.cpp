@@ -27,7 +27,7 @@
 
 #include <hybris/surface_flinger/surface_flinger_compatibility_layer.h>
 
-#include <gui/ISurfaceComposer.h>
+//#include <gui/ISurfaceComposer.h>
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
@@ -102,8 +102,8 @@ void zoom_msg_cb(void* context, int32_t new_zoom_level)
 
 	CameraControl* cc = static_cast<CameraControl*>(context);
 	static int zoom;
-	android_camera_get_current_zoom(cc, &zoom);
-	printf("\t Current zoom: %d\n", zoom);
+	//android_camera_get_current_zoom(cc, &zoom);
+	//printf("\t Current zoom: %d\n", zoom);
 	current_zoom_level = new_zoom_level;
 }
 
@@ -192,12 +192,14 @@ struct ClientWithSurface
 
 ClientWithSurface client_with_surface(bool setup_surface_with_egl)
 {
+
 	ClientWithSurface cs = ClientWithSurface();
 
 	cs.client = sf_client_create();
 
+        printf("foo\n");
 	if (!cs.client) {
-		printf("Problem creating client ... aborting now.");
+		printf("Problem creating client ... aborting now.\n");
 		return cs;
 	}
 
@@ -218,7 +220,7 @@ ClientWithSurface client_with_surface(bool setup_surface_with_egl)
 	cs.surface = sf_surface_create(cs.client, &params);
 
 	if (!cs.surface) {
-		printf("Problem creating surface ... aborting now.");
+		printf("Problem creating surface ... aborting now.\n");
 		return cs;
 	}
 
@@ -403,8 +405,8 @@ int main(int argc, char** argv)
 	android_camera_get_picture_size(cc, &width, &height);
 	printf("Current picture size: [%d,%d]\n", width, height);
 	int zoom;
-	android_camera_get_current_zoom(cc, &zoom);
-	printf("Current zoom: %d \n", zoom);
+	//android_camera_get_current_zoom(cc, &zoom);
+	//printf("Current zoom: %d \n", zoom);
 	android_camera_get_max_zoom(cc, &zoom);
 	printf("Max zoom: %d \n", zoom);
 
@@ -419,23 +421,26 @@ int main(int argc, char** argv)
 	android_camera_get_white_balance_mode(cc, &wb_mode);
 	android_camera_get_scene_mode(cc, &scene_mode);
 	android_camera_get_auto_focus_mode(cc, &af_mode);
-	android_camera_get_preview_format(cc, &pixel_format);
+	//android_camera_get_preview_format(cc, &pixel_format);
 	printf("Current effect mode: %d \n", effect_mode);
 	printf("Current flash mode: %d \n", flash_mode);
 	printf("Current wb mode: %d \n", wb_mode);
 	printf("Current scene mode: %d \n", scene_mode);
 	printf("Current af mode: %d \n", af_mode);
-	printf("Current preview pixel format: %d \n", pixel_format);
+	//printf("Current preview pixel format: %d \n", pixel_format);
 	//android_camera_set_focus_region(cc, -200, -200, 200, 200, 300);
 
+        printf("acquiring surface for preview\n");
 	ClientWithSurface cs = client_with_surface(true /* Associate surface with egl. */);
 
+        printf("acquired surface for preview\n");
 	if (!cs.surface) {
-		printf("Problem acquiring surface for preview");
+		printf("Problem acquiring surface for preview\n");
 		return 1;
 	}
-
-	EGLDisplay disp = sf_client_get_egl_display(cs.client);
+        printf("Got surface for preview\n");
+ 	
+        EGLDisplay disp = sf_client_get_egl_display(cs.client);
 	EGLSurface surface = sf_surface_get_egl_surface(cs.surface);
 
 	RenderData render_data;
