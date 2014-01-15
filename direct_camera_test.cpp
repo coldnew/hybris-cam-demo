@@ -21,11 +21,11 @@
 #include <hybris/camera/camera_compatibility_layer_capabilities.h>
 
 
-//#include <hybris/input/input_stack_compatibility_layer.h>
-//#include <hybris/input/input_stack_compatibility_layer_codes_key.h>
-//#include <hybris/input/input_stack_compatibility_layer_flags_key.h>
-//#include <hybris/input/input_stack_compatibility_layer_flags_motion.h>
-//
+#include <hybris/input/input_stack_compatibility_layer.h>
+#include <hybris/input/input_stack_compatibility_layer_codes_key.h>
+#include <hybris/input/input_stack_compatibility_layer_flags_key.h>
+#include <hybris/input/input_stack_compatibility_layer_flags_motion.h>
+
 //#include <hybris/surface_flinger/surface_flinger_compatibility_layer.h>
 //
 //#include <gui/ISurfaceComposer.h>
@@ -103,7 +103,7 @@ void zoom_msg_cb(void* context, int32_t new_zoom_level)
 
 	CameraControl* cc = static_cast<CameraControl*>(context);
 	static int zoom;
-	android_camera_get_current_zoom(cc, &zoom);
+	//android_camera_get_current_zoom(cc, &zoom);
 	printf("\t Current zoom: %d\n", zoom);
 	current_zoom_level = new_zoom_level;
 }
@@ -147,7 +147,7 @@ void preview_texture_needs_update_cb(void* ctx)
 void on_new_input_event(Event* event, void* context)
 {
     assert(context);
-
+    printf("\tevent...\n");
     if (event->type == KEY_EVENT_TYPE && event->action == ISCL_KEY_EVENT_ACTION_UP) {
 	    printf("We have got a key event: %d \n", event->details.key.key_code);
 
@@ -372,7 +372,7 @@ int main(int argc, char** argv)
 	listener.on_data_raw_image_cb = raw_data_cb;
 	listener.on_data_compressed_image_cb = jpeg_data_cb;
 	listener.on_preview_texture_needs_update_cb = preview_texture_needs_update_cb;
-	CameraControl* cc = android_camera_connect_to(FRONT_FACING_CAMERA_TYPE,
+	CameraControl* cc = android_camera_connect_to(BACK_FACING_CAMERA_TYPE,
 			&listener);
 
 	if (cc == NULL) {
@@ -409,7 +409,7 @@ int main(int argc, char** argv)
 	android_camera_get_picture_size(cc, &width, &height);
 	printf("Current picture size: [%d,%d]\n", width, height);
 	int zoom;
-	android_camera_get_current_zoom(cc, &zoom);
+	//android_camera_get_current_zoom(cc, &zoom);
 	printf("Current zoom: %d \n", zoom);
 	android_camera_get_max_zoom(cc, &zoom);
 	printf("Max zoom: %d \n", zoom);
@@ -426,7 +426,7 @@ int main(int argc, char** argv)
 	android_camera_get_white_balance_mode(cc, &wb_mode);
 	android_camera_get_scene_mode(cc, &scene_mode);
 	android_camera_get_auto_focus_mode(cc, &af_mode);
-	android_camera_get_preview_format(cc, &pixel_format);
+	//android_camera_get_preview_format(cc, &pixel_format);
 	printf("Current effect mode: %d \n", effect_mode);
 	printf("Current flash mode: %d \n", flash_mode);
 	printf("Current wb mode: %d \n", wb_mode);
@@ -456,27 +456,31 @@ int main(int argc, char** argv)
 			GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(
 			GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        
 	android_camera_set_preview_texture(cc, preview_texture_id);
-	android_camera_set_effect_mode(cc, EFFECT_MODE_SEPIA);
-	android_camera_set_flash_mode(cc, FLASH_MODE_AUTO);
-	android_camera_set_auto_focus_mode(cc, AUTO_FOCUS_MODE_CONTINUOUS_PICTURE);
-	android_camera_start_preview(cc);
+	
+        */
+        //android_camera_set_effect_mode(cc, EFFECT_MODE_SEPIA);
+	//android_camera_set_flash_mode(cc, FLASH_MODE_AUTO);
+	//android_camera_set_auto_focus_mode(cc, AUTO_FOCUS_MODE_CONTINUOUS_PICTURE);
+	//android_camera_start_preview(cc);
 
-	GLfloat transformation_matrix[16];
-	android_camera_get_preview_texture_transformation(cc, transformation_matrix);
-	glUniformMatrix4fv(render_data.matrix_loc, 1, GL_FALSE, transformation_matrix);
+        android_camera_take_snapshot(cc);
 
-	printf("Started camera preview.\n");
-	*/
+	//GLfloat transformation_matrix[16];
+	//android_camera_get_preview_texture_transformation(cc, transformation_matrix);
+	//glUniformMatrix4fv(render_data.matrix_loc, 1, GL_FALSE, transformation_matrix);
 
 
 	printf("Started camera preview.\n");
 	while (true) {
+	//printf("loop\n");
 		if (new_camera_frame_available){
 		  printf("New preview frame available");
 		  new_camera_frame_available = false;
 		}
 	}
 
-	return 0;
+
+        return 0;
 }
